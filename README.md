@@ -37,8 +37,14 @@ cat some_file > pipe1 # hook up the other end
 
 The point of this program is to be able to operate without scratch space in AWS batch.
 
-If your analysis is simple and uses a program that can read from STDIN and write to STDOUT, you do not need this tool and you
-can stop reading.
+Because it is designed to be used at Fred Hutch, where all
+buckets require that uploads have Server Side Encryption enabled
+(with the AES256 algorithm), `s3uploader` automatically turns
+this on.
+
+If your analysis is simple and uses a program takes one input
+and writes one output, and can read from STDIN and write to STDOUT,
+you do not need this tool and you can stop reading.
 
 But if you are using a tool that reads from one or more files and
 writes to one or more files, you may be able to use it.
