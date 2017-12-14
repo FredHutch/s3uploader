@@ -1,5 +1,25 @@
 # A simple program that can upload to S3 from a named pipe.
 
+## Problem:
+
+It's not trivial to provide scratch space for AWS Batch jobs.
+
+However, sometimes the need for scratch space can be eliminated.
+
+Imagine a batch job that downloads a file from S3,
+and runs a program that produces
+two output files and then uploads them to S3. If each of these
+3 files is 10GB, you'll need 30GB to do this, which is not
+available by default in AWS batch.
+
+If instead you could stream from S3, through your program,
+into two streams uploading back to S3, you could run the job
+without needing extra scratch space.
+
+That's where this tool, working in conjunction with
+[named pipes](https://en.wikipedia.org/wiki/Named_pipe), comes in.
+
+
 ## Usage:
 
 ```
@@ -56,7 +76,72 @@ How will you know? You'll probably get strange errors if you try it.
 
 ### Simple example
 
-TBA
+Imagine a program called `mytool` which takes a single input
+file and produces two output files. A typical invocation would
+look like this:
+
+```bash
+mytool --input inputfile --output1 outputfile1 --output2 outputfile2
+```
+
+What we want is for the input to be streamed from S3 and
+the output (both files) to be streamed back to S3.
+
+The first thing we have to do (as mentioned above) is
+set `AWS_REGION`:
+
+```bash
+export AWS_REGION=us-west-2
+```
+
+The standard AWS command-line interface (`aws`) can handle the
+downloading part, but `s3uploader` is needed for the upload.
+
+So let's create three named pipes:
+
+```bash
+mkfifo inputfile
+mkfifo outputfile1
+mkfifo outputfile2
+```
+
+Now let's hook up one end of the pipes.
+
+```bash
+aws s3 cp --sse AES256 --cli-read-timeout 0 \
+  s3://mybucket/myfile - > inputfile &
+```
+
+We've just set up the AWS command to download to the named
+pipe called `inputfile`, and to not time out. Nothing will actually
+happen until another process (`mytool` in this case) comes along
+and reads from the other end of the pipe. That's why we put
+the `&` at the end of the command, so it just waits until
+it's time to do something.
+
+Let's set up the other two pipes:
+
+```bash
+s3uploader -b mybucket -k outputfile1 < outputfile1 &
+
+s3uploader -b mybucket -k outputfile2 < outputfile2 &
+```
+
+We've set up two instances of `s3uploader` to upload to
+`s3://mybucket/outputfile1` and `s3://mybucket/outputfile2`
+from `outputfile1` and `outputfile2` respectively.
+Again, nothing will happen until `mytool` is run. So let's run it:
+
+```bash
+mytool --input inputfile --output1 outputfile1 --output2 outputfile2
+```
+
+Notice that this command line is identical to our first
+example invocation of `mytool`. But the files that it's operating
+on are named pipes, and data is actually being read from
+(and written to) S3.
+
+
 
 ### Real-world example
 
