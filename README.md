@@ -42,7 +42,7 @@ buckets require that uploads have Server Side Encryption enabled
 (with the AES256 algorithm), `s3uploader` automatically turns
 this on.
 
-If your analysis is simple and uses a program takes one input
+If your analysis is simple and uses a program that takes one input
 and writes one output, and can read from STDIN and write to STDOUT,
 you do not need this tool and you can stop reading.
 
