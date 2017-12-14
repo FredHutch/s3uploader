@@ -112,7 +112,7 @@ aws s3 cp --sse AES256 --cli-read-timeout 0 \
   s3://mybucket/myfile - > inputfile &
 ```
 
-We've just set up the AWS command to download to the named
+We've just set up the `aws` command to download to the named
 pipe called `inputfile`, and to not time out. Nothing will actually
 happen until another process (`mytool` in this case) comes along
 and reads from the other end of the pipe. That's why we put
