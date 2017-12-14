@@ -1,5 +1,9 @@
 package main
 
+// props to
+// https://stackoverflow.com/questions/43595911/how-to-save-data-streams-in-s3-aws-sdk-go-example-not-working
+// who showed me the way
+
 import (
 	"context"
 	"flag"
