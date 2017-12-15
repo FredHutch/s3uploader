@@ -36,6 +36,7 @@ out="${sampleName}_picard.stderr"
 
 # required for s3uploader
 AWS_REGION=us-west-2
+export AWS_REGION=us-west-2
 
 # set up named pipes
 
@@ -52,11 +53,11 @@ mkfifo $out
 # download bam file, set download to NOT time out
 aws s3 cp --cli-read-timeout 0 --sse AES256 s3://fh-pi-meshinchi-s/SR/$bam - > $bam &
 
-s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r1 < $r1 &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r1 < $r1 &
 
-s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r2 < $r2 &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r2 < $r2 &
 
-s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$out < $out &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$out < $out &
 
 
 
