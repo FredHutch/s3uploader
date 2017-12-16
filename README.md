@@ -25,10 +25,12 @@ That's where this tool, working in conjunction with
 ```
 s3uploader -h
 Usage of s3uploader:
-  -b string
-    	Bucket name.
-  -k string
-    	Object key name.
+ -b string
+       Bucket name.
+ -k string
+       Object key name.
+ -s string
+       Server-side encryption (AES256 or aws:kms)
 ```
 
 **NOTE**: The environment variable `AWS_REGION` must be
@@ -57,10 +59,9 @@ cat some_file > pipe1 # hook up the other end
 
 The point of this program is to be able to operate without scratch space in AWS batch.
 
-Because it is designed to be used at Fred Hutch, where all
-buckets require that uploads have Server Side Encryption enabled
-(with the AES256 algorithm), `s3uploader` automatically turns
-this on.
+Users at Fred Hutch must always supply the
+option `-s AES256` because buckets at Fred Hutch
+require server-side encryption with this algorithm.
 
 If your analysis is simple and uses a program that takes one input
 and writes one output, and can read from STDIN and write to STDOUT,
@@ -122,9 +123,9 @@ it's time to do something.
 Let's set up the other two pipes:
 
 ```bash
-s3uploader -b mybucket -k outputfile1 < outputfile1 &
+s3uploader -b mybucket -k outputfile1 -s AES256 < outputfile1 &
 
-s3uploader -b mybucket -k outputfile2 < outputfile2 &
+s3uploader -b mybucket -k outputfile2 -s AES256 < outputfile2 &
 ```
 
 We've set up two instances of `s3uploader` to upload to

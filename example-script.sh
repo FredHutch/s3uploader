@@ -53,11 +53,11 @@ mkfifo $out
 # download bam file, set download to NOT time out
 aws s3 cp --cli-read-timeout 0 --sse AES256 s3://fh-pi-meshinchi-s/SR/$bam - > $bam &
 
-AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r1 < $r1 &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -s AES256 -k SR/picard_fq2/$r1 < $r1 &
 
-AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$r2 < $r2 &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -s AES256 -k SR/picard_fq2/$r2 < $r2 &
 
-AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -k SR/picard_fq2/$out < $out &
+AWS_REGION=us-west-2 s3uploader -b fh-pi-meshinchi-s -s AES256 -k SR/picard_fq2/$out < $out &
 
 
 

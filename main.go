@@ -37,11 +37,12 @@ func (r *reader) Read(p []byte) (int, error) {
 //   # Upload myfile.txt to myBucket/myKey. Must complete within 10 minutes or will fail
 //   go run withContext.go -b mybucket -k myKey -d 10m < myfile.txt
 func main() {
-	var bucket, key string
+	var bucket, key, enctype string
 	// var timeout time.Duration
 
 	flag.StringVar(&bucket, "b", "", "Bucket name.")
 	flag.StringVar(&key, "k", "", "Object key name.")
+	flag.StringVar(&enctype, "s", "", "Server-side encryption (AES256 or aws:kms)")
 	// flag.DurationVar(&timeout, "d", 0, "Upload timeout.")
 	flag.Parse()
 
@@ -76,12 +77,16 @@ func main() {
 
 	// Uploads the object to S3. The Context will interrupt the request if the
 	// timeout expires.
-	_, err := uploader.UploadWithContext(ctx, &s3manager.UploadInput{
-		Bucket:               aws.String(bucket),
-		Key:                  aws.String(key),
-		Body:                 &reader{os.Stdin},
-		ServerSideEncryption: aws.String("AES256"),
-	})
+
+	uploadInput := s3manager.UploadInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+		Body:   &reader{os.Stdin},
+	}
+	if enctype != "" {
+		uploadInput.ServerSideEncryption = aws.String(enctype)
+	}
+	_, err := uploader.UploadWithContext(ctx, &uploadInput)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == request.CanceledErrorCode {
 			// If the SDK can determine the request or retry delay was canceled
