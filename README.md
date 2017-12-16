@@ -141,6 +141,15 @@ example invocation of `mytool`. But the files that it's operating
 on are named pipes, and data is actually being read from
 (and written to) S3.
 
+Finally, a short `sleep` is necessary so that the
+named pipes can finish their work. Then we indicate
+that we are done:
+
+```bash
+echo waiting 5 seconds
+sleep 5
+echo Done.
+```
 
 
 ### Real-world example
