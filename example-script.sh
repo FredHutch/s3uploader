@@ -78,3 +78,9 @@ java -Xmx6g -Xms2g -jar ${EBROOTPICARD}/picard.jar SamToFastq QUIET=true INCLUDE
 # aws s3 cp --sse AES256 "/$scratch/$out" s3://fh-pi-meshinchi-s/SR/picard_fq2/$out
 # aws s3 cp --sse AES256 "/$scratch/$r1" s3://fh-pi-meshinchi-s/SR/picard_fq2/$r1
 # aws s3 cp --sse AES256 "/$scratch/$r2" s3://fh-pi-meshinchi-s/SR/picard_fq2/$r2
+
+echo sleeping so that named pipes will close
+
+sleep 5
+
+echo Done.
