@@ -59,10 +59,6 @@ cat some_file > pipe1 # hook up the other end
 
 The point of this program is to be able to operate without scratch space in AWS batch.
 
-Users at Fred Hutch must always supply the
-option `-s AES256` because buckets at Fred Hutch
-require server-side encryption with this algorithm.
-
 If your analysis is simple and uses a program that takes one input
 and writes one output, and can read from STDIN and write to STDOUT,
 you do not need this tool and you can stop reading.
@@ -109,7 +105,7 @@ mkfifo outputfile2
 Now let's hook up one end of the pipes.
 
 ```bash
-aws s3 cp --sse AES256 --cli-read-timeout 0 \
+aws s3 cp --cli-read-timeout 0 \
   s3://mybucket/myfile - > inputfile &
 ```
 
@@ -123,9 +119,9 @@ it's time to do something.
 Let's set up the other two pipes:
 
 ```bash
-s3uploader -b mybucket -k outputfile1 -s AES256 < outputfile1 &
+s3uploader -b mybucket -k outputfile1 < outputfile1 &
 
-s3uploader -b mybucket -k outputfile2 -s AES256 < outputfile2 &
+s3uploader -b mybucket -k outputfile2 < outputfile2 &
 ```
 
 We've set up two instances of `s3uploader` to upload to
